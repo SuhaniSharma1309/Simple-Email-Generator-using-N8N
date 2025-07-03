@@ -61,10 +61,10 @@ Here’s what the n8n workflow looks like in the editor:
 
 ## ✅ Example Sent Email
 
-Here’s an example email sent successfully by the workflow:
+Here are 2 example emails sent successfully by the workflow:
 
-![Email Confirmation](images/email_sent.jpg)
-![Email Confirmation](images/email_sent1.jpg)
+![Email Confirmation](email_sent.jpg)
+![Email Confirmation](email_sent1.jpg)
 
 ---
 
