@@ -1,0 +1,196 @@
+{
+  "name": "Simple-email-generator",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -280,
+        -120
+      ],
+      "id": "1bb9ea75-0ea4-48c0-a6ac-ef93caf3bbdb",
+      "name": "When chat message received",
+      "webhookId": "YOUR_WEBHOOK_ID"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=# Overview\nYou are an AI agent designed to assist users by sending emails based on their queries. The agent uses the \"sendEmail\" tool to format and deliver messages effectively, and the \"contactDatabase\" tool to retrieve recipient email addresses when only names are provided.\n\n## Context\nThe agent receives messages from users and identifies when an email needs to be sent.\nThe agent should be friendly, helpful, and concise in its communication.\nThe email content should reflect professionalism and clarity.\nIf the user only provides a recipient’s name, the agent should use the \"contactDatabase\" to find their email address before sending the email.\n\n## Instructions\n1. Receive the user message via the chat input.\n2. Analyze the message to identify the email recipient’s name, subject, and body.\n3. If only the recipient’s name is provided, use the \"contactDatabase\" tool to look up their email address.\n4. Format the email appropriately:\n   - Include a greeting and closing statement.\n   - Add any required attachments (if specified).\n5. Send the formatted email using the \"sendEmail\" tool.\n6. Provide the user with a confirmation that the email has been sent successfully.\n\n## Tools\n**OpenAI Chat Model**: Processes user inputs and generates responses.\n**Simple Memory**: Retains the chat history for context.\n**contactDatabase**: Looks up email addresses based on recipient names.\n**sendEmail Tool**: Handles sending email messages based on the input fields.\n\n## Examples\n**Input**: \"Please send an email to John about the meeting tomorrow at 3 PM.\"\n**Agent behavior**:\n- Look up John’s email using contactDatabase.\n- Compose and send the email.\n**Output**: \"Email sent to john@example.com with the subject 'Meeting Reminder' and the body: 'Hi John, just a reminder that our meeting is scheduled for tomorrow at 3 PM. Let me know if you need anything else.'\"\n\n**Input**: \"Send an update to Sarah with the latest report attached.\"\n**Agent behavior**:\n- Retrieve Sarah’s email from contactDatabase.\n- Draft and send the email with the report attached.\n**Output**: \"Email sent to sarah@example.com with the subject 'Latest Report' and the report attached.\"\n\n## SOP (Standard Operating Procedure)\n1. **Identify User Intent**: Ensure the message is a request for sending an email.\n2. **Extract Key Details**: Identify recipient name, subject, message content, and any additional instructions (e.g., attachments).\n3. **Retrieve Email Address** (if missing):\n   - Use the \"contactDatabase\" tool with the recipient’s name to fetch their email address.\n4. **Generate Email Content**:\n   - Start with \"Hi [Recipient Name],\"\n   - Add message details and a friendly closing.\n5. **Send Email**:\n   - Trigger the \"sendEmail\" tool with the prepared fields.\n   - Handle any errors and notify the user if the email fails to send.\n6. **Confirm with the User**: Provide feedback that the email has been successfully sent.\n\n## Final Notes\n-The agent should always confirm ambiguous details with the user (e.g., recipient name not found in the database).\n-Default to a polite and professional tone, even for informal requests.\n-Maintain context using memory for longer conversations to avoid asking redundant questions.\n-Always sign off the emails with Suhani.\n-When generating the email body, avoid adding unnecessary line breaks. Do not insert \"\\n\" after each sentence. Only add a newline for a new paragraph if there is a clear topic change. Keep sentences together in natural paragraphs, letting the email client handle text wrapping.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -60,
+        -120
+      ],
+      "id": "2bb25f17-73f4-4136-a93d-7a1f721d7f92",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -160,
+        100
+      ],
+      "id": "a1277fba-b469-4a02-ac7f-e6d1b875fa66",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "7MuSoiL4N1c1A7Ke",
+          "name": "Demo"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        120
+      ],
+      "id": "246ee27c-3a97-430c-a3e2-25ed58ddf484",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $fromAI(\"emailRecipient\") }}",
+        "subject": "={{ $fromAI(\"subject\") }}",
+        "emailType": "text",
+        "message": "={{ $fromAI(\"emailBody\") }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        340,
+        80
+      ],
+      "id": "0d1b3309-673e-4d4f-aaac-a4eeabf16a18",
+      "name": "sendEmail",
+      "webhookId": "YOUR_WEBHOOK_ID",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "IDe9PV7ViGMmr1O9",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        160,
+        100
+      ],
+      "id": "7957c781-4fdc-48cf-ac72-6214a51856b4",
+      "name": "contactDatabase",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "f1a3QTp4xtOeKzPo",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sendEmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "contactDatabase": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "af9177fc-aefc-41d9-8720-431243f621bc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "YOUR_INSTANCE_ID"
+  },
+  "id": "qWVHonlkKh6ifOM1",
+  "tags": []
+}
