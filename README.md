@@ -57,13 +57,14 @@ This repository contains an n8n workflow that creates a **friendly AI assistant*
 
 Here’s what the n8n workflow looks like in the editor:
 
-![Workflow Screenshot](images/workflow.png)
+![Workflow Screenshot](Workflow%20screenshot.jpg)
 
 ## ✅ Example Sent Email
 
 Here’s an example email sent successfully by the workflow:
 
-![Email Confirmation](images/email_sent.png)
+![Email Confirmation](images/email_sent.jpg)
+![Email Confirmation](images/email_sent1.jpg)
 
 ---
 
